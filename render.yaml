@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: cpl2-scheduler
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: MONGODB_URI
+        sync: false
+      - key: ADMIN_KEY
+        sync: false

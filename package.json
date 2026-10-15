@@ -1,0 +1,17 @@
+{
+  "name": "cpl2-scheduler",
+  "version": "1.0.0",
+  "description": "CPL-2 coil scheduling rulebook and scheduler (HRPO/HRSPO and NGO FP)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "mongodb": "^6.12.0"
+  }
+}
