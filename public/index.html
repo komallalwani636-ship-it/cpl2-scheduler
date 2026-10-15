@@ -3,87 +3,241 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#1f5f8b">
+<meta name="theme-color" content="#1a56db">
 <title>CPL-2 Scheduler</title>
+<meta name="description" content="CPL-2 coil scheduling tool for HRPO/HRSPO and NGO FP — step-by-step guided scheduler.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="top"><div class="wrap">
-  <div class="hgroup">
-    <div class="label">JSW · Cold Rolling · CPL-2</div>
-    <h1>CPL-2 Scheduling Rulebook</h1>
-    <div class="src">
-      <span class="chip" id="srcName" title="Stock file in use">CPL2_HR_STOCK_FOR_SCHEDULING.xls</span>
-      <label class="btn" for="file">Load HR stock file</label>
-      <input id="file" type="file" accept=".xls,.xlsx,.csv" hidden>
+<!-- ========== TOP HEADER ========== -->
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">
+      <span class="brand-badge">JSW · CPL-2</span>
+      <h1>Coil Scheduler</h1>
+    </div>
+    <div class="hright">
+      <span class="sync-pill" id="sync"><i></i><span>Checking…</span></span>
+      <button class="icon-btn" id="bellBtn" aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <b id="bellCount" hidden>0</b>
+      </button>
     </div>
   </div>
-  <div class="hright">
-    <span class="sync" id="sync"><i></i><span>Saved on this device</span></span>
-    <button class="btn bell" id="bellBtn" aria-label="Notifications">Notifications<b id="bellCount" hidden>0</b></button>
+</header>
+
+<!-- ========== STEP RAIL ========== -->
+<nav class="stepper" aria-label="Steps">
+  <div class="wrap stepper-inner">
+    <button class="step-btn" data-step="1" aria-current="step">
+      <span class="step-num">1</span>
+      <span class="step-label">Upload Data</span>
+    </button>
+    <div class="step-line"></div>
+    <button class="step-btn" data-step="2">
+      <span class="step-num">2</span>
+      <span class="step-label">Settings</span>
+    </button>
+    <div class="step-line"></div>
+    <button class="step-btn" data-step="3">
+      <span class="step-num">3</span>
+      <span class="step-label">HR Schedule &amp; Filters</span>
+    </button>
+    <div class="step-line"></div>
+    <button class="step-btn" data-step="4">
+      <span class="step-num">4</span>
+      <span class="step-label">NGO FP &amp; Filters</span>
+    </button>
+    <div class="step-line"></div>
+    <button class="step-btn" data-step="5">
+      <span class="step-num">5</span>
+      <span class="step-label">Download &amp; History</span>
+    </button>
   </div>
-</div></header>
+</nav>
 
-<nav class="tabs" aria-label="Sections"><div class="wrap" role="tablist">
-  <button role="tab" data-tab="hr" aria-selected="true">HR schedule<span id="cHR"></span></button>
-  <button role="tab" data-tab="ngo" aria-selected="false">NGO FP report<span id="cNGO"></span></button>
-  <button role="tab" data-tab="rules" aria-selected="false">Rules &amp; settings</button>
-  <button role="tab" data-tab="prep" aria-selected="false">Data prep</button>
-  <button role="tab" data-tab="history" aria-selected="false">History<span id="cHist"></span></button>
-</div></nav>
-
+<!-- ========== MAIN PANELS ========== -->
 <main>
-  <section class="panel" id="p-hr"><div class="wrap"></div></section>
-  <section class="panel" id="p-ngo" hidden><div class="wrap"></div></section>
 
-  <section class="panel" id="p-rules" hidden><div class="wrap">
-    <div class="phead"><div>
-      <div class="label">Every value is editable</div>
-      <h2>Rules &amp; settings</h2>
-      <p>Change any limit and both schedules re-check at once. Settings save automatically and stay the same
-        the next time you open the page, on any device.</p>
-    </div></div>
-    <div class="sgrid" id="settingsForm"></div>
-    <div class="savebar">
-      <span id="saveState" class="sync"><i></i><span>All changes saved</span></span>
-      <span style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn danger" id="resetBtn">Reset to default rules</button>
-      </span>
-    </div>
-  </div></section>
+  <!-- STEP 1: Upload Data -->
+  <section class="panel" id="p-1">
+    <div class="wrap">
+      <div class="step-hero">
+        <div class="step-hero-text">
+          <div class="step-tag">Step 1 of 5</div>
+          <h2>Upload your HR stock file</h2>
+          <p>Export the <strong>Hrstock Report</strong> from your scheduling system as <strong>.xls or .xlsx</strong> and upload it here. The app will read the coils and run the rules automatically.</p>
+        </div>
+        <div class="upload-zone" id="uploadZone">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p class="upload-main">Click to upload or drag &amp; drop</p>
+          <p class="upload-sub">HR stock file — .xls or .xlsx</p>
+          <label class="btn primary" for="file">Choose file</label>
+          <input id="file" type="file" accept=".xls,.xlsx,.csv" hidden>
+        </div>
+      </div>
 
-  <section class="panel" id="p-prep" hidden><div class="wrap">
-    <div class="phead"><div>
-      <div class="label">Deck steps 1–14, plus your filters</div>
-      <h2>Preparing the schedule data</h2>
-      <p>How the raw Hrstock Report becomes the coils on the two schedules. Counts are for the stock file in use.</p>
-    </div></div>
-    <div class="funnel" id="funnel"></div>
-    <p class="note" id="aplNote" hidden></p>
-  </div></section>
+      <!-- File status card -->
+      <div class="file-status-card" id="fileStatusCard">
+        <div class="fsc-icon ok-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="fsc-body">
+          <div class="fsc-name" id="srcName">CPL2_HR_STOCK_FOR_SCHEDULING.xls</div>
+          <div class="fsc-detail" id="srcDetail">Loading…</div>
+        </div>
+        <label class="btn" for="file" style="flex-shrink:0">Replace file</label>
+      </div>
 
-  <section class="panel" id="p-history" hidden><div class="wrap">
-    <div class="phead"><div>
-      <div class="label">Activity log</div>
-      <h2>History</h2>
-      <p>Every stock file load, rule change, and key event recorded on this device.</p>
+      <!-- Data pipeline funnel -->
+      <div class="section-card" style="margin-top:24px">
+        <div class="section-card-hd">
+          <h3>How your data is prepared</h3>
+          <p>The 14 deck steps that turn the raw report into coils ready for scheduling.</p>
+        </div>
+        <div id="funnel"></div>
+        <p class="note" id="aplNote" hidden></p>
+      </div>
+
+      <div class="step-nav">
+        <span></span>
+        <button class="btn primary lg" data-goto="2">Next: Adjust Settings →</button>
+      </div>
     </div>
-    <button class="btn" id="clearHistBtn">Clear history</button>
+  </section>
+
+  <!-- STEP 2: Settings -->
+  <section class="panel" id="p-2" hidden>
+    <div class="wrap">
+      <div class="step-hero-text" style="margin-bottom:24px">
+        <div class="step-tag">Step 2 of 5</div>
+        <h2>Adjust rules &amp; settings</h2>
+        <p>These values come pre-filled with the standard CPL-2 deck rules. Change any limit and both schedules update instantly. Settings are saved automatically.</p>
+      </div>
+
+      <div class="sgrid" id="settingsForm"></div>
+
+      <div class="savebar">
+        <span id="saveState" class="sync-pill"><i></i><span>All changes saved</span></span>
+        <span style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn danger" id="resetBtn">Reset to defaults</button>
+        </span>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn" data-goto="1">← Back</button>
+        <button class="btn primary lg" data-goto="3">Next: View HR Schedule →</button>
+      </div>
     </div>
-    <div class="funnel" id="histList"></div>
-  </div></section>
+  </section>
+
+  <!-- STEP 3: HR Schedule -->
+  <section class="panel" id="p-3" hidden>
+    <div class="wrap">
+      <div class="step-hero-text" style="margin-bottom:16px">
+        <div class="step-tag">Step 3 of 5</div>
+        <h2>HR Schedule &amp; Report <span id="cHR" class="count-badge"></span></h2>
+        <p>Filter, search, and arrange your HR coils. Adjust jump limits and filters right on this page or fine-tune with the ↑ ↓ arrows.</p>
+      </div>
+      <div id="p-hr-content"></div>
+      <div class="step-nav">
+        <button class="btn" data-goto="2">← Back</button>
+        <button class="btn primary lg" data-goto="4">Next: NGO FP Report →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4: NGO FP -->
+  <section class="panel" id="p-4" hidden>
+    <div class="wrap">
+      <div class="step-hero-text" style="margin-bottom:16px">
+        <div class="step-tag">Step 4 of 5</div>
+        <h2>NGO FP Report &amp; Schedule <span id="cNGO" class="count-badge"></span></h2>
+        <p>Filter, search, and schedule NGO FP coils. Fine-tune silicon welding matrix and width jumps directly on this page.</p>
+      </div>
+      <div id="p-ngo-content"></div>
+      <div class="step-nav">
+        <button class="btn" data-goto="3">← Back</button>
+        <button class="btn primary lg" data-goto="5">Next: Download &amp; History →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 5: Download & History -->
+  <section class="panel" id="p-5" hidden>
+    <div class="wrap">
+      <div class="step-hero-text" style="margin-bottom:24px">
+        <div class="step-tag">Step 5 of 5</div>
+        <h2>Download reports &amp; review history</h2>
+        <p>Export the schedules as Excel files and review what has changed on this device.</p>
+      </div>
+
+      <!-- Download cards -->
+      <div class="download-grid">
+        <div class="dl-card">
+          <div class="dl-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div>
+            <h3>HR Schedule</h3>
+            <p id="hrDlDesc" class="dl-desc">HRPO + HRSPO coils in rolling order</p>
+          </div>
+          <button class="btn primary" data-act="export" data-g="HR">⬇ Download Excel</button>
+        </div>
+        <div class="dl-card">
+          <div class="dl-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div>
+            <h3>NGO FP Report</h3>
+            <p id="ngoDlDesc" class="dl-desc">NGO FP coils in rolling order</p>
+          </div>
+          <button class="btn primary" data-act="export" data-g="NGO">⬇ Download Excel</button>
+        </div>
+      </div>
+
+      <!-- Notifications settings -->
+      <div class="section-card" style="margin-top:24px">
+        <div class="section-card-hd">
+          <h3>Notifications</h3>
+          <p>Choose what alerts you want to receive while the page is open.</p>
+        </div>
+        <div class="checks" id="notifChecks"></div>
+      </div>
+
+      <!-- History -->
+      <div class="section-card" style="margin-top:16px">
+        <div class="section-card-hd">
+          <h3>Activity History <span id="cHist" class="count-badge"></span></h3>
+          <p>Every upload, rule change, and export recorded on this device.</p>
+          <button class="btn" id="clearHistBtn" style="margin-top:8px">Clear history</button>
+        </div>
+        <div id="histList"></div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn" data-goto="4">← Back</button>
+        <button class="btn" data-goto="1">↺ Start over</button>
+      </div>
+    </div>
+  </section>
+
 </main>
 
+<!-- ========== NOTIFICATIONS DRAWER ========== -->
 <div class="shade" id="shade" hidden></div>
 <aside class="drawer" id="drawer" hidden aria-label="Notifications">
-  <header><h3>Notifications</h3><span style="display:flex;gap:8px"><button class="btn" id="markRead">Mark all read</button>
-  <button class="btn" id="closeDrawer" aria-label="Close">Close</button></span></header>
+  <header>
+    <h3>Notifications</h3>
+    <span style="display:flex;gap:8px">
+      <button class="btn" id="markRead">Mark all read</button>
+      <button class="btn" id="closeDrawer" aria-label="Close">✕</button>
+    </span>
+  </header>
   <div class="nlist" id="nlist"></div>
 </aside>
 <div class="toast" id="toast" hidden role="status"></div>
