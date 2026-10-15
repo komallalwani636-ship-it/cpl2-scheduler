@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1f5f8b">
-<title>CPL-2 Scheduling Rulebook</title>
+<title>CPL-2 Scheduler</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -35,6 +35,7 @@
   <button role="tab" data-tab="ngo" aria-selected="false">NGO FP report<span id="cNGO"></span></button>
   <button role="tab" data-tab="rules" aria-selected="false">Rules &amp; settings</button>
   <button role="tab" data-tab="prep" aria-selected="false">Data prep</button>
+  <button role="tab" data-tab="history" aria-selected="false">History<span id="cHist"></span></button>
 </div></nav>
 
 <main>
@@ -65,6 +66,17 @@
     </div></div>
     <div class="funnel" id="funnel"></div>
     <p class="note" id="aplNote" hidden></p>
+  </div></section>
+
+  <section class="panel" id="p-history" hidden><div class="wrap">
+    <div class="phead"><div>
+      <div class="label">Activity log</div>
+      <h2>History</h2>
+      <p>Every stock file load, rule change, and key event recorded on this device.</p>
+    </div>
+    <button class="btn" id="clearHistBtn">Clear history</button>
+    </div>
+    <div class="funnel" id="histList"></div>
   </div></section>
 </main>
 

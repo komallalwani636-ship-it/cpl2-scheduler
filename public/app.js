@@ -13,7 +13,7 @@ const POLL_MS = 20000;
 
 const $ = s => document.querySelector(s);
 const esc = s => S(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const f2 = v => (v == null ? "—" : String(Math.round(v * 100) / 100));
+const f2 = v => (v == null ? "â€”" : String(Math.round(v * 100) / 100));
 const ls = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -80,11 +80,11 @@ function renderSched(g) {
   $("#c" + g).textContent = full.length;
   const isHR = g === "HR";
   const applied = isHR
-    ? [`Thinner gauge (&lt; ${set.thickFrom} mm): jump ≤ ${set.thinJump} mm, width ≤ ${set.thinWidth} mm`,
-      `Thicker gauge (≥ ${set.thickFrom} mm): jump ≤ ${set.thickJump} mm, width ≤ ${set.thickWidth} mm`,
+    ? [`Thinner gauge (&lt; ${set.thickFrom} mm): jump â‰¤ ${set.thinJump} mm, width â‰¤ ${set.thinWidth} mm`,
+      `Thicker gauge (â‰¥ ${set.thickFrom} mm): jump â‰¤ ${set.thickJump} mm, width â‰¤ ${set.thickWidth} mm`,
       `Critical TDC above ${set.critThk} mm not back to back`]
-    : [`Width jump ≤ ${set.ngoWidth} mm`, "Silicon grade welding matrix",
-      set.ngoThk != null ? `Thickness jump ≤ ${set.ngoThk} mm` : "Thickness jump not checked"];
+    : [`Width jump â‰¤ ${set.ngoWidth} mm`, "Silicon grade welding matrix",
+      set.ngoThk != null ? `Thickness jump â‰¤ ${set.ngoThk} mm` : "Thickness jump not checked"];
   applied.push(`Age &gt; ${set.ageMin} h`);
   if (set.sameThk) applied.push("Same thickness together");
   const body = vis.map((e, i) => {
@@ -100,21 +100,21 @@ function renderSched(g) {
     if (set.sameThk && (!prevV || R.thkKey(prevV) !== R.thkKey(o))) {
       let n = 0, w = 0;
       for (let j = i; j < vis.length && R.thkKey(vis[j].o) === R.thkKey(o); j++) { n++; w += N(vis[j].o.Wgt) || 0; }
-      grpRow = `<tr class="grp"><td colspan="15"><b>${R.thkKey(o)} mm</b><span>${n} coil${n > 1 ? "s" : ""} · ${f2(w)} t</span></td></tr>`;
+      grpRow = `<tr class="grp"><td colspan="15"><b>${R.thkKey(o)} mm</b><span>${n} coil${n > 1 ? "s" : ""} Â· ${f2(w)} t</span></td></tr>`;
     }
     return `${grpRow}<tr class="${cls}"><td class="n">${i + 1}</td>
-      <td><span class="mv"><button data-g="${g}" data-mv="-1" data-i="${i}" aria-label="Move up">↑</button>
-        <button data-g="${g}" data-mv="1" data-i="${i}" aria-label="Move down">↓</button></span></td>
+      <td><span class="mv"><button data-g="${g}" data-mv="-1" data-i="${i}" aria-label="Move up">â†‘</button>
+        <button data-g="${g}" data-mv="1" data-i="${i}" aria-label="Move down">â†“</button></span></td>
       <td class="mono">${esc(o["HR Coil No"])}</td>${isHR ? `<td>${esc(o.Product)}</td>` : ""}
-      <td class="n">${f2(N(o.Thk))}</td><td class="n">${N(o.Wdt) ?? "—"}</td>
+      <td class="n">${f2(N(o.Thk))}</td><td class="n">${N(o.Wdt) ?? "â€”"}</td>
       <td class="n dv ${tc}">${e.dt == null ? "" : f2(e.dt)}</td><td class="n dv ${wc}">${e.dw == null ? "" : e.dw}</td>
-      <td class="n">${f2(N(o.Wgt))}</td><td class="n">${N(o["Age Hours"]) ?? "—"}</td>
+      <td class="n">${f2(N(o.Wgt))}</td><td class="n">${N(o["Age Hours"]) ?? "â€”"}</td>
       <td class="mono">${esc(gradeOf(o))}</td>${isHR ? "" : `<td class="n">${f2(N(o["Silicon %"]))}</td>`}
       <td class="cust" title="${esc(o.Cust)}">${esc(o.Cust)}</td><td>${esc(o.Status)}</td>
       <td><div class="why">${pill}${e.iss.map(x => `<span>${esc(x[1])}</span>`).join("")}</div></td></tr>`;
   }).join("");
   root.innerHTML = `
-   <div class="phead"><div><div class="label">${isHR ? "HRPO + HRSPO" : "NGO FP · separate report"}</div>
+   <div class="phead"><div><div class="label">${isHR ? "HRPO + HRSPO" : "NGO FP Â· separate report"}</div>
      <h2>${isHR ? "HR schedule" : "NGO FP report"}</h2>
      <p>Each coil is checked against the coil rolled before it. Use Auto-arrange to build an order that follows the rules,
        then fine-tune with the arrows. The order is saved.</p></div></div>
@@ -123,7 +123,7 @@ function renderSched(g) {
      <div class="tile"><b>${f2(ton)}</b><span>tonnes ready</span></div>
      <div class="tile ${sm.breaks ? "bad" : "ok"}"><b>${sm.breaks}</b><span>rule breaks</span></div>
      <div class="tile ${sm.checks ? "warn" : "ok"}"><b>${sm.checks}</b><span>to check</span></div>
-     <div class="tile"><b>${sm.held}</b><span>held, age ≤ ${set.ageMin} h</span></div>
+     <div class="tile"><b>${sm.held}</b><span>held, age â‰¤ ${set.ageMin} h</span></div>
    </div>
    <div class="applied"><span class="label" style="align-self:center">Rules applied</span>${applied.map(a => `<span class="chip">${a}
      </span>`).join("")}<button class="btn" data-goto="rules" style="padding:2px 10px">Edit</button></div>
@@ -133,11 +133,12 @@ function renderSched(g) {
      <button class="btn" data-act="thk" data-g="${g}">Sort by thickness</button>
      <button class="btn" data-act="wdt" data-g="${g}">Sort by width</button>
      <span class="sep"></span>
+     <button class="btn" data-act="export" data-g="${g}">⬇ Export Excel</button>
      <label class="check"><input type="checkbox" id="hide-${g}" ${hideHeld[g] ? "checked" : ""}> Hide held coils</label>
    </div>
    <div class="tbl"><table class="seq"><thead><tr><th>#</th><th>Move</th><th>HR coil</th>
       ${isHR ? "<th>Product</th>" : ""}<th>Thk mm</th><th>Wdt mm</th>
-      <th>Δ Thk</th><th>Δ Wdt</th><th>Wgt t</th><th>Age h</th>
+      <th>Î” Thk</th><th>Î” Wdt</th><th>Wgt t</th><th>Age h</th>
       <th>${isHR ? "TDC" : "Grade"}</th>${isHR ? "" : "<th>Si %</th>"}
       <th>Customer</th><th>Status</th><th>Check vs previous coil</th></tr></thead>
    <tbody>${body || `<tr><td colspan="15" style="padding:18px;color:var(--muted)">
@@ -171,6 +172,9 @@ document.addEventListener("click", e => {
     toast(act.dataset.act === "arrange" ? "Coils arranged by the rules" : "Order updated");
     return;
   }
+  if (act && act.dataset.act === "export") {
+    exportSheet(act.dataset.g); return;
+  }
   const go = e.target.closest("[data-goto]");
   if (go) showTab(go.dataset.goto);
 });
@@ -184,9 +188,9 @@ function renderPrep() {
   const total = rows.length || 1;
   $("#funnel").innerHTML = res.steps.map(({ st, before, after, apl: a }) => {
     const drop = before - after - a; let nums;
-    if (st.split) nums = `<span>${after} stay in PLAN</span><span style="color:var(--heat)">${a} → APL7</span>`;
+    if (st.split) nums = `<span>${after} stay in PLAN</span><span style="color:var(--heat)">${a} â†’ APL7</span>`;
     else if (st.f) nums = `<span>${after} of ${before}</span>
-      ${drop ? `<span class="drop">−${drop}</span>` : `<span class="muted">no change
+      ${drop ? `<span class="drop">âˆ’${drop}</span>` : `<span class="muted">no change
       </span>`}`;
     else nums = `<span>${after} rows</span><span class="muted">${st.no === "1" ? "start" : "no rows removed"}</span>`;
     return `<div class="stage"><div class="no">${st.no === "Filter" ? "Your filter" : "Step " + st.no}</div><div>
@@ -199,14 +203,52 @@ function renderPrep() {
     </code>`).join(" and ") + " stayed in PLAN because the remark is not typed exactly as APL7.";
 }
 
+/* ---------- export to Excel ---------- */
+function exportSheet(g) {
+  if (typeof XLSX === "undefined") { toast("SheetJS not loaded. Check your connection and reload."); return; }
+  const full = ordered(g);
+  const ev = R.evaluate(g, full, set);
+  const isHR = g === "HR";
+  const rows_out = ev.map((e, i) => {
+    const o = e.o;
+    const sm = R.summary([e]);
+    const status = R.isHeld(o, set) ? "Held" : sm.breaks ? "Rule Break" : sm.checks ? "Check" : i === 0 ? "First coil" : "OK";
+    const row = {
+      "#": i + 1,
+      "HR Coil No": S(o["HR Coil No"]),
+      "Thk mm": o.Thk,
+      "Wdt mm": o.Wdt,
+      "Î” Thk": e.dt ?? "",
+      "Î” Wdt": e.dw ?? "",
+      "Wgt t": o.Wgt,
+      "Age h": o["Age Hours"],
+      "Customer": S(o.Cust),
+      "Status": S(o.Status),
+      "Result": status,
+      "Issues": e.iss.map(x => x[1]).join("; ")
+    };
+    if (isHR) { row["Product"] = S(o.Product); row["TDC"] = S(o.Tdc); }
+    else { row["Grade"] = S(o["Ord Crgrade"]); row["Si %"] = o["Silicon %"]; }
+    return row;
+  });
+  const ws = XLSX.utils.json_to_sheet(rows_out);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, g === "HR" ? "HR Schedule" : "NGO FP");
+  const now = new Date();
+  const ts = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+  XLSX.writeFile(wb, `CPL2_${g}_Schedule_${ts}.xlsx`);
+  pushEvent("ok", `Exported ${g} schedule (${rows_out.length} coils) at ${now.toLocaleTimeString()}`);
+  toast(`Exported ${rows_out.length} coils to Excel`);
+}
+
 /* ---------- settings tab ---------- */
 const NUM = [
-  { g: "jump", k: "thinJump", l: "Thinner gauge jump", u: "mm", st: 0.05, deck: "Deck: 0.4 mm in 1.6–2.0 mm" },
-  { g: "jump", k: "thickJump", l: "Thicker gauge jump", u: "mm", st: 0.05, deck: "Deck: 1 mm in 2–6 mm" },
+  { g: "jump", k: "thinJump", l: "Thinner gauge jump", u: "mm", st: 0.05, deck: "Deck: 0.4 mm in 1.6â€“2.0 mm" },
+  { g: "jump", k: "thickJump", l: "Thicker gauge jump", u: "mm", st: 0.05, deck: "Deck: 1 mm in 2â€“6 mm" },
   { g: "jump", k: "thickFrom", l: "Thicker gauge starts at", u: "mm", st: 0.1,
     deck: "Coils from this thickness up use the thicker limits" },
   { g: "width", k: "thinWidth", l: "Width change, thinner gauge", u: "mm", st: 5, deck: "Deck: 150 mm below 2.0 mm" },
-  { g: "width", k: "thickWidth", l: "Width change, thicker gauge", u: "mm", st: 5, deck: "Deck: 250–300 mm" },
+  { g: "width", k: "thickWidth", l: "Width change, thicker gauge", u: "mm", st: 5, deck: "Deck: 250â€“300 mm" },
   { g: "width", k: "thickWidthWarn", l: "Flag thicker width above", u: "mm", st: 5, deck: "Shown as Check, not a break. Blank = off",
     blank: true },
   { g: "range", k: "thkMin", l: "Thinnest coil", u: "mm", st: 0.1, deck: "Deck: 1.6 mm" },
@@ -220,7 +262,7 @@ const NUM = [
 ];
 const fieldsHTML = g => `<div class="fields">${NUM.filter(f => f.g === g).map(f => `<div class="field"><label for="s-${f.k}">${f.l}</label>
   <div class="inp">
-  <input id="s-${f.k}" data-k="${f.k}" type="number" inputmode="decimal" step="${f.st}" ${f.blank ? 'placeholder="—"' : ""}
+  <input id="s-${f.k}" data-k="${f.k}" type="number" inputmode="decimal" step="${f.st}" ${f.blank ? 'placeholder="â€”"' : ""}
     value="${set[f.k] ?? ""}">
   <span>${f.u}</span></div><small id="h-${f.k}">${f.deck}</small></div>`).join("")}</div>`;
 const card = (title, desc, inner, wide) => `<div class="card${wide ? " wide" : ""}"><header><h3>${title}</h3>${desc ? `<p>${desc}</p>` : ""}
@@ -289,7 +331,7 @@ function renderPicker(id) {
   p._keys = keys;
 }
 function renderMatrix() {
-  $("#mx").innerHTML = `<thead><tr><th>First ↓ Next →</th>${GR.map((g, i) => `<th>${g}<br><span class="muted">${SI[i]}%</span>
+  $("#mx").innerHTML = `<thead><tr><th>First â†“ Next â†’</th>${GR.map((g, i) => `<th>${g}<br><span class="muted">${SI[i]}%</span>
     </th>`).join("")}</tr></thead><tbody>${GR.map(r => `<tr><th>${r}</th>${[...set.matrix[r]].map((c, i) => `<td>
     <button data-mx="${r}" data-i="${i}" class="${c === "Y" ? "y" : "x"}"
       aria-label="${r} then ${GR[i]}: ${c === "Y" ? "allowed" : "not allowed"}">${c === "Y" ? "YES" : "NO"}
@@ -361,7 +403,7 @@ async function saveSettings() {
 }
 function setSave(s) {
   const el = $("#saveState");
-  const t = { pending: "Saving…", ok: "All changes saved for every device", local: "Saved on this device only" }[s];
+  const t = { pending: "Savingâ€¦", ok: "All changes saved for every device", local: "Saved on this device only" }[s];
   el.className = "sync " + (s === "ok" ? "on" : s === "local" ? "local" : "");
   el.querySelector("span").textContent = t;
 }
@@ -385,7 +427,7 @@ async function saveStock() {
 /* ---------- loading a stock file ---------- */
 function loadAOA(aoa, name) {
   const hi = aoa.findIndex(r => r && r.some(c => S(c) === "HR Coil No"));
-  if (hi < 0) { toast("No “HR Coil No” column found. Load the Hrstock Report export."); return; }
+  if (hi < 0) { toast("No â€œHR Coil Noâ€ column found. Load the Hrstock Report export."); return; }
   const head = aoa[hi].map(S); const idx = KEEP.map(c => head.indexOf(c));
   const missing = KEEP.filter((c, i) => idx[i] < 0);
   const data = aoa.slice(hi + 1).filter(r => r && r.some(c => c != null && c !== "")).map(r => idx.map(i => {
@@ -429,7 +471,7 @@ function buildAlerts() {
   }
   const v = R.remarkVariants(res.plan); const n = Object.values(v).reduce((x, y) => x + y, 0);
   if (set.nRemarks && n) a.push({ key: `rm-${n}`, level: "warn",
-    text: `${n} coil${n > 1 ? "s have" : " has"} receiving remark ${Object.keys(v).map(k => "“" + k + "”").join(" / ")}` +
+    text: `${n} coil${n > 1 ? "s have" : " has"} receiving remark ${Object.keys(v).map(k => "â€œ" + k + "â€").join(" / ")}` +
       " instead of APL7 and stayed in PLAN.",
     go: "prep", btn: "Open data prep" });
   if (!a.length) a.push({ key: "clear", level: "ok", text: "No open alerts. Both schedules follow the current rules." });
@@ -470,10 +512,35 @@ function toast(t) { const el = $("#toast"); el.textContent = t; el.hidden = fals
 /* ---------- tabs ---------- */
 function showTab(id) {
   document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === id));
-  ["hr", "ngo", "rules", "prep"].forEach(t => ($("#p-" + t).hidden = t !== id));
+  ["hr", "ngo", "rules", "prep", "history"].forEach(t => ($("#p-" + t).hidden = t !== id));
+  if (id === "history") renderHistory();
   ls.set("cpl2.tab", id); history.replaceState(null, "", "#" + id); window.scrollTo({ top: 0 });
 }
 document.querySelectorAll("nav.tabs button").forEach(b => (b.onclick = () => showTab(b.dataset.tab)));
+
+/* ---------- history tab ---------- */
+function renderHistory() {
+  const el = $("#histList");
+  if (!events.length) {
+    el.innerHTML = '<div class="stage"><div class="no">â€”</div><div><p style="color:var(--muted)">No events recorded yet. Load a stock file or change a rule.</p></div><div></div></div>';
+    return;
+  }
+  el.innerHTML = events.map(e => {
+    const col = e.level === "bad" ? "var(--bad)" : e.level === "warn" ? "var(--heat)" : "var(--ok)";
+    const time = new Date(e.at).toLocaleString();
+    return `<div class="stage">
+      <div class="no" style="color:${col};font-weight:600">${e.level.toUpperCase()}</div>
+      <div><p>${esc(e.text)}</p></div>
+      <div class="meter"><div class="nums"><span class="muted">${time}</span></div></div>
+    </div>`;
+  }).join("");
+  $("#cHist").textContent = events.length;
+}
+$("#clearHistBtn").onclick = () => {
+  events = []; ls.set("cpl2.events", events); renderHistory();
+  $("#cHist").textContent = "";
+  toast("History cleared");
+};
 
 /* ---------- sync with the server ---------- */
 // Applies anything on the server that is newer than what this device last saw.
